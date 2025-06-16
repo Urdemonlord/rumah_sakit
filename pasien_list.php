@@ -22,9 +22,8 @@
         </div>
 
         <div class="card">
-            <h2>👥 Daftar Pasien</h2>
-              <?php
-            $result = mysqli_query($conn, "SELECT * FROM pasien ORDER BY nama");
+            <h2>👥 Daftar Pasien</h2>            <?php
+            $result = mysqli_query($conn, "SELECT * FROM pasien ORDER BY Nm_Pasien");
             $total_pasien = 0;
             if ($result) {
                 $total_pasien = mysqli_num_rows($result);
@@ -34,43 +33,53 @@
             <div class="alert alert-info">
                 📊 Total Pasien Terdaftar: <strong><?php echo $total_pasien; ?></strong> orang
             </div>
-            
-            <table class="table">
+              <table class="table">
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>ID Pasien</th>
                         <th>Nama Lengkap</th>
-                        <th>Jenis Kelamin</th>
-                        <th>Tanggal Lahir</th>
+                        <th>Jenis Pasien</th>
+                        <th>JK</th>
+                        <th>Umur</th>
+                        <th>Tempat, Tgl Lahir</th>
                         <th>Alamat</th>
-                        <th>No. Telepon</th>
-                        <th>No. KTP</th>
+                        <th>Telepon</th>
+                        <th>Tgl Masuk</th>
                         <th>Aksi</th>
                     </tr>
-                </thead>                <tbody>
+                </thead>
+                <tbody>
                     <?php
                     $no = 1;
                     if ($result) {
                         mysqli_data_seek($result, 0); // Reset pointer
                         while ($row = mysqli_fetch_assoc($result)) {
-                            $umur = date('Y') - date('Y', strtotime($row['tgl_lahir']));
+                            $jk_full = ($row['JK'] == 'L') ? 'Laki-laki' : 'Perempuan';
+                            $jenis_badge = ($row['Jenis_Pasien'] == 'Rawat Inap') ? 
+                                '<span style="background: #e74c3c; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.8rem;">🏥 Rawat Inap</span>' : 
+                                '<span style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.8rem;">🚶 Rawat Jalan</span>';
+                            
                             echo "<tr>
                                 <td>".$no++."</td>
-                                <td><strong>".$row['nama']."</strong></td>
-                                <td>".($row['jenis_kelamin'] ?? 'Tidak diisi')."</td>
-                                <td>".date('d/m/Y', strtotime($row['tgl_lahir']))." <small>($umur tahun)</small></td>
-                                <td>".$row['alamat']."</td>
-                                <td>".($row['no_telepon'] ?? 'Tidak diisi')."</td>
-                                <td>".($row['no_ktp'] ?? 'Tidak diisi')."</td>
+                                <td><strong>P".str_pad($row['Id_Pasien'], 4, '0', STR_PAD_LEFT)."</strong></td>
+                                <td><strong>".$row['Nm_Pasien']."</strong></td>
+                                <td>$jenis_badge</td>
+                                <td>".$jk_full."</td>
+                                <td>".$row['Umur']." tahun</td>
+                                <td>".$row['Tmpt_Lahir'].", ".date('d/m/Y', strtotime($row['Tgl_lahir']))."</td>
+                                <td>".$row['Alamat']."</td>
+                                <td>".($row['Tlpn'] ?? '-')."</td>
+                                <td>".date('d/m/Y', strtotime($row['Tgl_Masuk']))."</td>
                                 <td>
-                                    <a href='rekam_medis_form.php?id_pasien=".$row['id']."' class='btn btn-primary btn-sm'>📋 Rekam Medis</a>
+                                    <a href='rekam_medis_form.php?id_pasien=".$row['Id_Pasien']."' class='btn btn-primary btn-sm'>📋 Rekam Medis</a>
                                 </td>
                             </tr>";
                         }
                     }
                     
                     if ($total_pasien == 0) {
-                        echo "<tr><td colspan='8' style='text-align: center; color: #7f8c8d;'>Belum ada data pasien. <a href='pasien_form.php'>Tambah pasien pertama</a></td></tr>";
+                        echo "<tr><td colspan='11' style='text-align: center; color: #7f8c8d;'>Belum ada data pasien. <a href='pasien_form.php'>Tambah pasien pertama</a></td></tr>";
                     }
                     ?>
                 </tbody>

@@ -23,18 +23,24 @@
 
         <div class="card">
             <h2>👤 Form Input Data Pasien</h2>
-            
-            <?php
+              <?php
             if (isset($_POST['simpan'])) {
+                $jenis_pasien = mysqli_real_escape_string($conn, $_POST['jenis_pasien']);
                 $nama = mysqli_real_escape_string($conn, $_POST['nama']);
+                $tgl_masuk = $_POST['tgl_masuk'];
+                $tmpt_lahir = mysqli_real_escape_string($conn, $_POST['tmpt_lahir']);
+                $tgl_lahir = $_POST['tgl_lahir'];
+                $jk = $_POST['jk'];
                 $alamat = mysqli_real_escape_string($conn, $_POST['alamat']);
-                $tgl = $_POST['tgl_lahir'];
-                $jenis_kelamin = $_POST['jenis_kelamin'];
-                $no_telepon = mysqli_real_escape_string($conn, $_POST['no_telepon']);
-                $no_ktp = mysqli_real_escape_string($conn, $_POST['no_ktp']);
+                $tlpn = mysqli_real_escape_string($conn, $_POST['tlpn']);
                 
-                $sql = "INSERT INTO pasien (nama, alamat, tgl_lahir, jenis_kelamin, no_telepon, no_ktp) 
-                        VALUES ('$nama', '$alamat', '$tgl', '$jenis_kelamin', '$no_telepon', '$no_ktp')";
+                // Hitung umur
+                $lahir = new DateTime($tgl_lahir);
+                $sekarang = new DateTime();
+                $umur = $sekarang->diff($lahir)->y;
+                
+                $sql = "INSERT INTO pasien (Jenis_Pasien, Nm_Pasien, Tgl_Masuk, Tmpt_Lahir, Tgl_lahir, Umur, JK, Alamat, Tlpn) 
+                        VALUES ('$jenis_pasien', '$nama', '$tgl_masuk', '$tmpt_lahir', '$tgl_lahir', '$umur', '$jk', '$alamat', '$tlpn')";
                 
                 if (mysqli_query($conn, $sql)) {
                     echo '<div class="alert alert-success">✅ Data pasien berhasil disimpan!</div>';
@@ -43,25 +49,29 @@
                 }
             }
             ?>
-            
-            <form method="POST" action="">
+              <form method="POST" action="">
+                <div class="form-group">
+                    <label for="jenis_pasien">Jenis Pasien:</label>
+                    <select name="jenis_pasien" class="form-control" required>
+                        <option value="">-- Pilih Jenis Pasien --</option>
+                        <option value="Rawat Jalan">Rawat Jalan</option>
+                        <option value="Rawat Inap">Rawat Inap</option>
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label for="nama">Nama Lengkap:</label>
                     <input type="text" name="nama" class="form-control" required placeholder="Masukkan nama lengkap pasien">
                 </div>
                 
                 <div class="form-group">
-                    <label for="no_ktp">Nomor KTP:</label>
-                    <input type="text" name="no_ktp" class="form-control" required placeholder="Masukkan nomor KTP" maxlength="16">
+                    <label for="tgl_masuk">Tanggal Masuk:</label>
+                    <input type="date" name="tgl_masuk" class="form-control" required value="<?php echo date('Y-m-d'); ?>">
                 </div>
                 
                 <div class="form-group">
-                    <label for="jenis_kelamin">Jenis Kelamin:</label>
-                    <select name="jenis_kelamin" class="form-control" required>
-                        <option value="">-- Pilih Jenis Kelamin --</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                    </select>
+                    <label for="tmpt_lahir">Tempat Lahir:</label>
+                    <input type="text" name="tmpt_lahir" class="form-control" required placeholder="Masukkan tempat lahir">
                 </div>
                 
                 <div class="form-group">
@@ -70,13 +80,22 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="jk">Jenis Kelamin:</label>
+                    <select name="jk" class="form-control" required>
+                        <option value="">-- Pilih Jenis Kelamin --</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
                     <label for="alamat">Alamat Lengkap:</label>
                     <textarea name="alamat" class="form-control" required placeholder="Masukkan alamat lengkap pasien" rows="3"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="no_telepon">Nomor Telepon:</label>
-                    <input type="tel" name="no_telepon" class="form-control" required placeholder="Masukkan nomor telepon">
+                    <label for="tlpn">Nomor Telepon:</label>
+                    <input type="tel" name="tlpn" class="form-control" placeholder="Masukkan nomor telepon">
                 </div>
                 
                 <button type="submit" name="simpan" class="btn btn-primary">💾 Simpan Data Pasien</button>

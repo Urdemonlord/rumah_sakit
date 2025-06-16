@@ -23,19 +23,19 @@
 
         <div class="card">
             <h2>📝 Form Input Rekam Medis</h2>
-            
-            <?php
+              <?php
             if (isset($_POST['simpan'])) {
                 $id_pasien = $_POST['id_pasien'];
                 $id_dokter = $_POST['id_dokter'];
-                $keluhan = $_POST['keluhan'];
-                $diagnosa = $_POST['diagnosa'];
-                $tindakan = $_POST['tindakan'];
-                $obat = $_POST['obat'];
+                $keluhan = mysqli_real_escape_string($conn, $_POST['keluhan']);
+                $diagnosa = mysqli_real_escape_string($conn, $_POST['diagnosa']);
+                $tb = (float)$_POST['tb'];
+                $bb = (float)$_POST['bb'];
+                $tensi = mysqli_real_escape_string($conn, $_POST['tensi_darah']);
                 $tanggal = date('Y-m-d H:i:s');
                 
-                $sql = "INSERT INTO rekam_medis (id_pasien, id_dokter, keluhan, diagnosa, tindakan, obat, tanggal_periksa) 
-                        VALUES ('$id_pasien', '$id_dokter', '$keluhan', '$diagnosa', '$tindakan', '$obat', '$tanggal')";
+                $sql = "INSERT INTO rekam_medis (id_Pasien, id_dokter, keluhan, diagnosa, TB, BB, Tensi_darah, tgl_periksa) 
+                        VALUES ('$id_pasien', '$id_dokter', '$keluhan', '$diagnosa', '$tb', '$bb', '$tensi', '$tanggal')";
                 
                 if (mysqli_query($conn, $sql)) {
                     echo '<div class="alert alert-success">✅ Rekam medis berhasil disimpan!</div>';
@@ -51,9 +51,10 @@
                     <select name="id_pasien" class="form-control" required>
                         <option value="">-- Pilih Pasien --</option>
                         <?php
-                        $result_pasien = mysqli_query($conn, "SELECT * FROM pasien ORDER BY nama");
+                        $result_pasien = mysqli_query($conn, "SELECT * FROM pasien ORDER BY Nm_Pasien");
                         while ($pasien = mysqli_fetch_assoc($result_pasien)) {
-                            echo "<option value='".$pasien['id']."'>".$pasien['nama']." - ".$pasien['alamat']."</option>";
+                            $selected = (isset($_GET['id_pasien']) && $_GET['id_pasien'] == $pasien['Id_Pasien']) ? 'selected' : '';
+                            echo "<option value='".$pasien['Id_Pasien']."' $selected>P".str_pad($pasien['Id_Pasien'], 4, '0', STR_PAD_LEFT)." - ".$pasien['Nm_Pasien']." (".$pasien['Umur']." tahun)</option>";
                         }
                         ?>
                     </select>
@@ -64,9 +65,10 @@
                     <select name="id_dokter" class="form-control" required>
                         <option value="">-- Pilih Dokter --</option>
                         <?php
-                        $result_dokter = mysqli_query($conn, "SELECT * FROM dokter ORDER BY nama");
+                        $result_dokter = mysqli_query($conn, "SELECT d.*, jk.Nmbidang_keahlian FROM dokter d LEFT JOIN jenis_keahlian jk ON d.Kode_Keahlian = jk.Kode_keahlian ORDER BY d.nm_dokter");
                         while ($dokter = mysqli_fetch_assoc($result_dokter)) {
-                            echo "<option value='".$dokter['id']."'>Dr. ".$dokter['nama']." - ".$dokter['spesialis']."</option>";
+                            $selected = (isset($_GET['id_dokter']) && $_GET['id_dokter'] == $dokter['id_dokter']) ? 'selected' : '';
+                            echo "<option value='".$dokter['id_dokter']."' $selected>Dr. ".$dokter['nm_dokter']." - ".$dokter['Nmbidang_keahlian']."</option>";
                         }
                         ?>
                     </select>
@@ -83,13 +85,18 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="tindakan">Tindakan/Terapi:</label>
-                    <textarea name="tindakan" class="form-control" rows="3" required placeholder="Tindakan medis yang diberikan..."></textarea>
+                    <label for="tb">Tinggi Badan (cm):</label>
+                    <input type="number" name="tb" class="form-control" step="0.1" min="0" max="300" placeholder="Contoh: 170.5">
                 </div>
                 
                 <div class="form-group">
-                    <label for="obat">Obat yang Diberikan:</label>
-                    <textarea name="obat" class="form-control" rows="3" placeholder="Daftar obat dan dosis..."></textarea>
+                    <label for="bb">Berat Badan (kg):</label>
+                    <input type="number" name="bb" class="form-control" step="0.1" min="0" max="300" placeholder="Contoh: 65.5">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tensi_darah">Tekanan Darah:</label>
+                    <input type="text" name="tensi_darah" class="form-control" placeholder="Contoh: 120/80">
                 </div>
                 
                 <button type="submit" name="simpan" class="btn btn-primary">💾 Simpan Rekam Medis</button>

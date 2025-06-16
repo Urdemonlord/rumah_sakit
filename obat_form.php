@@ -23,16 +23,18 @@
 
         <div class="card">
             <h2>💊 Form Tambah Obat</h2>
-            
-            <?php
+              <?php
             if (isset($_POST['simpan'])) {
-                $nama = mysqli_real_escape_string($conn, $_POST['nama_obat']);
-                $stok = (int)$_POST['stok'];
-                $harga = (float)$_POST['harga'];
+                $kode_obat = mysqli_real_escape_string($conn, $_POST['kode_obat']);
+                $nama = mysqli_real_escape_string($conn, $_POST['nm_obat']);
+                $harga = (float)$_POST['harga_obat'];
+                $tgl_kadaluarsa = $_POST['tgl_kadaluarsa'];
                 $satuan = mysqli_real_escape_string($conn, $_POST['satuan']);
-                $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
+                $letak = mysqli_real_escape_string($conn, $_POST['letak_obat']);
+                $stok = (int)$_POST['stok'];
                 
-                $sql = "INSERT INTO obat (nama_obat, stok, harga, satuan, keterangan) VALUES ('$nama', '$stok', '$harga', '$satuan', '$keterangan')";
+                $sql = "INSERT INTO obat (Kode_obat, nm_obat, harga_obat, tgl_kadaluarsa, satuan, letak_obat, stok) 
+                        VALUES ('$kode_obat', '$nama', '$harga', '$tgl_kadaluarsa', '$satuan', '$letak', '$stok')";
                 if (mysqli_query($conn, $sql)) {
                     echo '<div class="alert alert-success">✅ Obat berhasil ditambah!</div>';
                 } else {
@@ -43,13 +45,23 @@
             
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="nama_obat">Nama Obat:</label>
-                    <input type="text" name="nama_obat" class="form-control" required placeholder="Masukkan nama obat">
+                    <label for="kode_obat">Kode Obat:</label>
+                    <input type="text" name="kode_obat" class="form-control" required placeholder="Contoh: OBT001" maxlength="10">
                 </div>
                 
                 <div class="form-group">
-                    <label for="stok">Stok:</label>
-                    <input type="number" name="stok" class="form-control" required min="0" placeholder="Jumlah stok obat">
+                    <label for="nm_obat">Nama Obat:</label>
+                    <input type="text" name="nm_obat" class="form-control" required placeholder="Masukkan nama obat">
+                </div>
+                
+                <div class="form-group">
+                    <label for="harga_obat">Harga Obat (Rp):</label>
+                    <input type="number" name="harga_obat" class="form-control" required min="0" step="0.01" placeholder="Harga dalam Rupiah">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tgl_kadaluarsa">Tanggal Kadaluarsa:</label>
+                    <input type="date" name="tgl_kadaluarsa" class="form-control" required>
                 </div>
                 
                 <div class="form-group">
@@ -68,13 +80,13 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="harga">Harga per Satuan (Rp):</label>
-                    <input type="number" name="harga" class="form-control" required min="0" step="0.01" placeholder="Harga dalam Rupiah">
+                    <label for="letak_obat">Letak Obat:</label>
+                    <input type="text" name="letak_obat" class="form-control" required placeholder="Contoh: Rak A1">
                 </div>
                 
                 <div class="form-group">
-                    <label for="keterangan">Keterangan:</label>
-                    <textarea name="keterangan" class="form-control" rows="3" placeholder="Keterangan tambahan tentang obat (opsional)"></textarea>
+                    <label for="stok">Stok:</label>
+                    <input type="number" name="stok" class="form-control" required min="0" placeholder="Jumlah stok obat">
                 </div>
                 
                 <button type="submit" name="simpan" class="btn btn-primary">💾 Simpan Obat</button>

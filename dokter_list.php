@@ -23,9 +23,8 @@
 
         <div class="card">
             <h2>👨‍⚕️ Daftar Dokter</h2>
-            
-            <?php
-            $result = mysqli_query($conn, "SELECT * FROM dokter ORDER BY nama");
+              <?php
+            $result = mysqli_query($conn, "SELECT d.*, jk.Nmbidang_keahlian FROM dokter d LEFT JOIN jenis_keahlian jk ON d.Kode_Keahlian = jk.Kode_keahlian ORDER BY d.nm_dokter");
             $total_dokter = 0;
             if ($result) {
                 $total_dokter = mysqli_num_rows($result);
@@ -40,8 +39,11 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>ID Dokter</th>
                         <th>Nama Dokter</th>
+                        <th>JK</th>
                         <th>Spesialis</th>
+                        <th>Pendidikan</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -51,20 +53,24 @@
                     $no = 1;
                     if ($result) {
                         while ($row = mysqli_fetch_assoc($result)) {
+                            $jk_full = ($row['JK'] == 'L') ? 'Laki-laki' : 'Perempuan';
                             echo "<tr>
                                 <td>".$no++."</td>
-                                <td><strong>Dr. ".$row['nama']."</strong></td>
-                                <td><span style='background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;'>".$row['spesialis']."</span></td>
-                                <td><span style='background: #27ae60; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;'>✅ Aktif</span></td>
+                                <td><strong>DR".str_pad($row['id_dokter'], 3, '0', STR_PAD_LEFT)."</strong></td>
+                                <td><strong>Dr. ".$row['nm_dokter']."</strong></td>
+                                <td>".$jk_full."</td>
+                                <td><span style='background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;'>".$row['Nmbidang_keahlian']."</span></td>
+                                <td>".$row['pendidikan']."</td>
+                                <td><span style='background: #27ae60; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem;'>✅ ".$row['status']."</span></td>
                                 <td>
-                                    <a href='rekam_medis_form.php?id_dokter=".$row['id']."' class='btn btn-primary btn-sm'>📋 Buat Rekam Medis</a>
+                                    <a href='rekam_medis_form.php?id_dokter=".$row['id_dokter']."' class='btn btn-primary btn-sm'>📋 Buat Rekam Medis</a>
                                 </td>
                             </tr>";
                         }
                     }
                     
                     if ($total_dokter == 0) {
-                        echo "<tr><td colspan='5' style='text-align: center; color: #7f8c8d;'>Belum ada data dokter.</td></tr>";
+                        echo "<tr><td colspan='8' style='text-align: center; color: #7f8c8d;'>Belum ada data dokter.</td></tr>";
                     }
                     ?>
                 </tbody>
